@@ -47,7 +47,7 @@ np.save(filename,coefs)
 def poly_even(a,x):
     p=0    
     for i in np.arange(0,10):
-        p=p+a[i]*cos(i*x*pi/180)
+        p=p+a[i]*np.cos(i*x*pi/180)
     return p
 
 def residual_even(a,y,x):
@@ -57,7 +57,7 @@ def residual_even(a,y,x):
 def poly_odd(a,x):
     p=0    
     for i in np.arange(0,10):
-        p=p+a[i]*sin((i+1)*x*pi/180)
+        p=p+a[i]*np.sin((i+1)*x*pi/180)
     return p    
 
 def residual_odd(a,y,x):
