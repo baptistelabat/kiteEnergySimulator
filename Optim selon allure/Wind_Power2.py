@@ -5,7 +5,11 @@
 
 import numpy as np
 import cfg
-import CoeffAero
+
+import sys
+sys.path.append('../Coefs')
+import CoefsAero
+import wing_cfg
 
 #
 def Apparent_Wind(U,Uwind,Wind_direction):
@@ -21,10 +25,10 @@ def Forces(Xpar,Uwind,Wind_direction):
     alpha=Xpar[1]
     beta=Xpar[2]
     [Uapp,delta]=Apparent_Wind(U,Uwind,Wind_direction)
-    Cl=CoeffAero.CL(alpha)
-    Cd=CoeffAero.CD(alpha)
-    Lift=1/2*cfg.rho*cfg.Area*Cl*Uapp**2
-    Draft=1/2*cfg.rho*cfg.Area*Cd*Uapp**2
+    Cl=CoefsAero.CL(alpha)
+    Cd=CoefsAero.CD(alpha)
+    Lift=1/2*cfg.rho*wing_cfg.Area*Cl*Uapp**2
+    Draft=1/2*cfg.rho*wing_cfg.Area*Cd*Uapp**2
     Fx=np.cos(delta)*Draft+np.sin(delta)*np.sin(beta)*Lift
     Fy=np.sin(delta)*Draft+np.cos(delta)*np.sin(beta)*Lift
     Fz=np.cos(beta)*Lift
