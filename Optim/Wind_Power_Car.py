@@ -32,10 +32,10 @@ def Forces(Angles,U,WDir):# Define loads applied to the kite wing
    # k=0
     while np.abs(Uwind-Umem)>10e-4: #Looking for the balance position
         [Uapp,delta]=Apparent_Wind(U,Uwind,WDir)
-        Cl=CoeffAero.CL(alpha)
-        Cd=CoeffAero.CD(alpha)
-        Lift=1./2.*cfg.rho*cfg.Area*Cl*Uapp**2
-        Draft=1./2.*cfg.rho*cfg.Area*Cd*Uapp**2
+        Cl=CoefsAero.CL(alpha)
+        Cd=CoefsAero.CD(alpha)
+        Lift=1./2.*cfg.rho*wing_cfg.Area*Cl*Uapp**2
+        Draft=1./2.*cfg.rho*wing_cfg.Area*Cd*Uapp**2
         Fx=np.cos(delta)*Draft+np.sin(delta)*np.sin(beta)*Lift
         Fy=np.sin(delta)*Draft+np.cos(delta)*np.sin(beta)*Lift
         Fz=np.cos(beta)*Lift

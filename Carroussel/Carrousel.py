@@ -7,10 +7,15 @@ from scipy.optimize import minimize_scalar
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import pi
+
+import sys
+sys.path.append('../Optim')
+
 import Wind_Power_Car as WPC
 
 cmptKA=0
 cmptPower=0
+global n
 
 def Kite_Attitude(U,WD):# Define loads exerced on the kite according to the Wind direction WD. U is the trolley speed
     global cmptKA,cmptPower,n
@@ -51,6 +56,7 @@ def f(U): # f is the function used in the optimisation of the trolley speed.
         P=P+Polar[8,wd]/npt
     return(-P)
 
+n=15.
 npt=60 # number of discretization points for the carrousel circle
 Uopt=minimize_scalar(f,bounds=[1.,500.],method='Bounded') #optimisation of
 print'Uopt',Uopt.x
@@ -58,7 +64,6 @@ print'La fonction Kite_Allure a ete lancee',cmptKA,'fois (',cmptKA/npt,'vitesses
 print'La fonction Power a ete lancee',cmptPower,'fois, soit',cmptPower/cmptKA,'fois en moyenne'
 
 
-n=15.
 P=0. #P is the Power
 Polar=np.zeros((9,npt))
 for wd in np.arange(npt):
