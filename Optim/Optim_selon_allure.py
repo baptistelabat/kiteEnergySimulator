@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 import numpy as np

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 """
 Load Aerodynamic coefficients CLift (CL) et CDraft (CD) from our files.dat
 """

@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 # Fixer les paramètres de l'aile et du wind
 # Optimiser l'angle d'incidence et la vitesse du chariot pour maximiser la puissance
 # Renvoyer l'angle d'incidence, la vitesse chariot, les efforts aéro et la puissance récupérable

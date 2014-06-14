@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 # Fichier où définir toutes les variables globales du problème
 # En particulier : paramètres de l'aile, du vent, de l'air, les constantes physiques...
 # pour utiliser ces variables dans d'autres modules :

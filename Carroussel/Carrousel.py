@@ -1,8 +1,10 @@
-"""
-Created on Fri Mar 14 16:04:44 2014
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+# Licensed under the MIT License,
+# https://github.com/baptistelabat/kiteEnergySimulator
+# @author: Charles Spraul
+# Created on Fri Mar 14 16:04:44 2014
 
-@author: Charles Spraul
-"""
 from scipy.optimize import minimize_scalar
 import matplotlib.pyplot as plt
 import numpy as np

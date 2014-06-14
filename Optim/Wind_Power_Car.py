@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 '''
 File whith useful functions for Carrousel_optim
 
