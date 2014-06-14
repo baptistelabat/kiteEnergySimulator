@@ -8,4 +8,4 @@ Cord=0.5            # corde (m)
 Camber=0            # cambrure
 L=10                # envergure (m)
 Weight=2.5          # masse (kg)
-Wing='../Coefs/DU40_A17.npy'  # profil used
+Wing='../Coefs/DU21_A17.npy'  # profil used

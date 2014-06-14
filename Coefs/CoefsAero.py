@@ -8,30 +8,30 @@ import wing_cfg
 import matplotlib.pyplot as plt
 import numpy as np
 
-filename=wing_cfg.Wing # the profil is chosen in cfg.py
-coefs=load(filename)
+filename    = wing_cfg.Wing # The profil is chosen in wing_cfg.py
+coefs       = load(filename)
 
+AoA_index, CL_index, CD_index  = range(3)
 
 # Lift coefficient
 def CL(alpha):
-    return interp(alpha*180/pi,coefs[:,0],coefs[:,1])
+    return interp(alpha, coefs[:, AoA_index], coefs[:, CL_index])
     
 # Drag coefficient
 def CD(alpha):
-    return interp(alpha*180/pi,coefs[:,0],coefs[:,2])
+    return interp(alpha, coefs[:, AoA_index], coefs[:, CD_index])
 
 def CLoverCD(alpha):
     return CL(alpha)/CD(alpha)
 
-# Plot Aerodynamic Finess of our profil
-angle=np.pi/180*np.linspace(0,180,500)
+# Plot Aerodynamic glide ratio of our profil
+angles = np.linspace(0, np.pi, num = 500)
 
-finesse=np.empty(len(angle))
-for i in np.arange(0,len(angle)):
-    finesse[i] =CLoverCD(angle[i])
-    
-plt.plot(180./(np.pi)*angle,finesse,'bx',label='Profil chosen') 
-plt.xlabel('Angle d''incidence (deg)')
-plt.ylabel('Cl/Cd') 
-plt.legend()
-plt.show()
+glide_ratio = [CLoverCD(angle) for angle in angles]
+
+if False: 
+    plt.plot(180./(np.pi)*angles, glide_ratio,'bx', label='Profil chosen') 
+    plt.xlabel('Angle of attack (deg)')
+    plt.ylabel('Cl/Cd') 
+    plt.legend()
+    plt.show()

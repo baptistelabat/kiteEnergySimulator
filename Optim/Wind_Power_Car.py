@@ -5,52 +5,81 @@ File whith useful functions for Carrousel_optim
 
 # Optimiser l'angle d'incidence et la vitesse du chariot pour maximiser la puissance
 # Renvoyer l'angle d'incidence, la vitesse chariot, les efforts aero et la puissance recuperable
+# Find angle of attack and cart speed to optimize the power extraction
+# Refer to "Rapport_v3_3-2.pdf" for documentation
 
 import numpy as np
 import cfg
 
 import sys
 sys.path.append('../Coefs')
-import CoefsAero
-import wing_cfg
+from CoefsAero import CD, CL
+from wing_cfg import Area as S
+from cfg import rho
 
 #
-def Apparent_Wind(U,Uwind,WDir):# Definition of the Apparent Wind. U = Speed of the trolley supposed equal to the kite speed
-    Uapp=np.sqrt((np.cos(WDir)*Uwind-U)**2+(np.sin(WDir)*Uwind)**2)
-    if WDir==0.:
-        delta=(U>Uwind)*np.pi
-    else:
-        delta=2.*np.arctan((np.sin(WDir)*Uwind)/((np.cos(WDir)*Uwind-U)+Uapp))
-    return (Uapp,delta)
+def Apparent_Wind(U, Uwind, WDir):
+    """Definition of the Apparent Wind.
+     U = Speed of the trolley supposed equal to the kite speed
+     0deg is wind from behind
+     180deg is facing wind"""
+    Uapp  = np.hypot(  np.sin(WDir)*Uwind, np.cos(WDir)*Uwind - U)   
+    delta = np.arctan2(np.sin(WDir)*Uwind, np.cos(WDir)*Uwind - U)
+    return (Uapp, delta)
+    
+def AerodynamicForces(Uapp, alpha):
+    """Computes lift and drag in frame defined by wind
+     direction and body orientation.
+     It assumes body is stabilised in "yaw" to face wind"""
+    Lift = 1./2*rho*S*Uapp**2*CL(alpha)
+    Drag = 1./2*rho*S*Uapp**2*CD(alpha)
+    return (Lift, Drag)
+    
+def Forces(Angles, U, Uwind, WDir):
+    """Computes forces projected in ground reference frame"""
+    alpha = Angles[0]
+    beta  = Angles[1]
+    
+    # Compute apparent wind at given wind speed
+    [Uapp, delta] = Apparent_Wind(U, Uwind, WDir)
+    
+    # Compute corresponding lift and drag
+    Lift, Drag = AerodynamicForces(Uapp, alpha)
+    
+    # Project in ground reference frame
+    Fx = np.cos(delta)*Drag + np.sin(delta)*np.sin(beta)*Lift
+    Fy = np.sin(delta)*Drag + np.cos(delta)*np.sin(beta)*Lift
+    Fz = np.cos(beta) *Lift
+    return (Fx, Fy, Fz)
 
 #
-def Forces(Angles,U,WDir):# Define loads applied to the kite wing
-    alpha=Angles[0]
-    beta=Angles[1]
-    Uwind=cfg.Uwind
-    Umem=0.
-   # k=0
-    while np.abs(Uwind-Umem)>10e-4: #Looking for the balance position
-        [Uapp,delta]=Apparent_Wind(U,Uwind,WDir)
-        Cl=CoefsAero.CL(alpha)
-        Cd=CoefsAero.CD(alpha)
-        Lift=1./2.*cfg.rho*wing_cfg.Area*Cl*Uapp**2
-        Draft=1./2.*cfg.rho*wing_cfg.Area*Cd*Uapp**2
-        Fx=np.cos(delta)*Draft+np.sin(delta)*np.sin(beta)*Lift
-        Fy=np.sin(delta)*Draft+np.cos(delta)*np.sin(beta)*Lift
-        Fz=np.cos(beta)*Lift
-        Z=cfg.l*np.sin(np.arctan(Fz/np.sqrt(Fx**2+Fy**2)))
-        Umem=Uwind
-        Uwind=cfg.Uwind*np.log(Z/cfg.Zo)/np.log(cfg.Zref/cfg.Zo) # Log wind profil
-       
-    X=cfg.l*np.sin(np.arctan(Fx/np.sqrt(Fz**2+Fy**2)))
-    Y=cfg.l*np.sin(np.arctan(Fy/np.sqrt(Fx**2+Fz**2)))
-    return (Fx,Fy,Fz,X,Y,Z)
+def ComputeEquilibrium(Angles, U, WDir):
+    """Computes the position at which the kite is at equilibrium
+     for a given orientation"""
+    Uwind = cfg.Uwind
+    Umem  = 0. # Temporary variable to track convergence
+    
+    # Iterate to find the balance position
+    while np.abs(Uwind - Umem) > 10e-4: 
+        Fx, Fy, Fz = Forces(Angles, U, Uwind, WDir)
+        
+        # Assuming massless kite and string, compute kite attitude
+        Z = cfg.line_length*np.sin(np.arctan2(Fz, np.hypot(Fx, Fy)))
+        
+        # Compute the effective wind at this altitude using log wind profil
+        # http://en.wikipedia.org/wiki/Log_wind_profile
+        Umem = Uwind
+        Uwind = cfg.Uwind*np.log(Z/cfg.Zo)/np.log(cfg.Zref/cfg.Zo) # Log wind profil
+        
+    # Compute the kite position in ground reference frame   
+    X = cfg.line_length*np.sin(np.arctan2(Fx, np.hypot(Fz, Fy)))
+    Y = cfg.line_length*np.sin(np.arctan2(Fy, np.hypot(Fx, Fz)))
+    return (Fx, Fy, Fz, X, Y, Z)
 
 #
-def Power(Fx,U):
-    f=0.5*U**2    #loss on the electrical engine
-    P=(Fx-f)*U
+def Power(Fx, U):
+    f = 0.5*U**2    #loss on the electrical engine
+    P = (Fx - f)*U
     return(P)
 
 

@@ -4,77 +4,58 @@ Created on Tue Feb 25 21:38:12 2014
 
 @author: Quentin Renaud
 """
-#Lecture du fichier de données
+# Read the data file
 import numpy as np
 from numpy import pi
 from scipy.optimize import leastsq
 import matplotlib.pyplot as plt
 import os
 
-def el1(lineStr,symb):
-    elFind=False
-    for c in lineStr:
-        if c!=symb:
-            if not elFind:
-                el=c
-                elFind=True
-            else:
-                el=''.join([el,c])
-        elif elFind:
-            break
-    return el
-
-#Input file [Angle Cl Cd]
-folder="."
+# Input file [Angle_deg Cl Cd Cm]
+folder = "."
 os.chdir(folder)
-filename="DU21_A17.dat"
+filename = "DU21_A17.dat"
 
-#Input file reading  
-fileId=open(filename)
-data=fileId.readlines()
-fileId.close()
+coefs = np.genfromtxt(filename, dtype=float, skip_header=14)
+# Convert first column to radians
+coefs[:, 0] = pi/180*coefs[:, 0]
+angles  = coefs[:, 0]
+CL      = coefs[:, 1]
+CD      = coefs[:, 2]
 
-line1=14 #1st line of the data file
-s=np.size(data)
-coefs=np.zeros((s-line1,3))
+filename=filename.replace('.dat', '.npy')
+np.save(filename, coefs)
 
-for line in np.arange(line1,s):
-    dline=str(data[line])
-    for i in np.arange(0,3):
-        coefs[line-14,i]=el1(dline,' ')
-        dline=dline.replace(el1(dline,' '),'',1)
-        
-filename=filename.replace('.dat','.npy')
-np.save(filename,coefs)
-
-def poly_trigo(a,x):
-    p=0    
-    for i in np.arange(0,15):
-        p=p+a[2*i]*np.cos(i*x*pi/180)
-    for i in np.arange(0,15):
-        p=p+a[2*i+1]*np.sin((i+1)*x*pi/180)
+def poly_trigo(a, theta, N=5):
+    p = a[0]    
+    for i in range(1, N+1):
+        p = p + a[2*i-1]*np.cos(i*theta)
+    for i in range(1, N+1):
+        p = p + a[2*i]*np.sin(i*theta)
     return p
     
 
-def residual(a,y,x):
-    err=y-poly_trigo(a,x)
+def residual(a, y, theta, N):
+    err = y - poly_trigo(a, theta, N=N)
     return err
 
-a0=np.ones(30)
-CL_poly=leastsq(residual,a0,args=(coefs[:,1],coefs[:,0]))
-CL_poly=CL_poly[0]
-filename=filename.replace('.npy','_CL.npy')
-np.save(filename,CL_poly)
+N = 15
+a = np.ones(2*N+1)
+CL_poly = leastsq(residual, a, args=(CL, angles, N))
+CL_poly = CL_poly[0]
+filename = filename.replace('.npy', '_CL.npy')
+np.save(filename, CL_poly)
 print(CL_poly)
-CD_poly=leastsq(residual,a0,args=(coefs[:,2],coefs[:,0]))
-CD_poly=CD_poly[0]
-filename=filename.replace('CL','CD')
-np.save(filename,CD_poly)
+
+CD_poly = leastsq(residual, a, args=(CD, angles, N))
+CD_poly = CD_poly[0]
+filename = filename.replace('CL', 'CD')
+np.save(filename, CD_poly)
 print(CD_poly)
 
 
-plt.plot(coefs[:,0],coefs[:,1],'r')
-plt.plot(coefs[:,0],poly_trigo(CL_poly,coefs[:,0]),'r+')
-plt.plot(coefs[:,0],coefs[:,2],'b')
-plt.plot(coefs[:,0],poly_trigo(CD_poly,coefs[:,0]),'b+')
+plt.plot(angles*180/pi, CL, 'r')
+plt.plot(angles*180/pi, poly_trigo(CL_poly, angles, N), 'r+')
+plt.plot(angles*180/pi, CD, 'b')
+plt.plot(angles*180/pi, poly_trigo(CD_poly, angles, N), 'b+')
 plt.show()
