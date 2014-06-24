@@ -1,7 +1,7 @@
 kiteEnergySimulator
 ===================
 
-This piece of software aims at computing the power that can be retrieved from a kite, pulling a craft or an electrical generator. This simulator was developed by Quentin RENAUD, Vincent ARNAL, Charles SPRAUL during a student project at Ecole Centrale de Nantes, based on a proposal by Baptiste LABAT.
+This piece of software aims at computing the power that can be retrieved from a kite, pulling a craft or an electrical generator. This simulator was developed by Quentin RENAUD, Vincent ARNAL, Charles SPRAUL during a student project at Ecole Centrale de Nantes, based on a proposal by Baptiste LABAT. The project report (in french) can be found here http://www.nautilabs.com/doc/Rapport_v3_3.pdf
 
 To run the code you need to install python and a few libraries  
 -Numpy  
