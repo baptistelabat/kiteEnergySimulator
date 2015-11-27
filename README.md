@@ -8,7 +8,19 @@ To run the code you need to install python and a few libraries
 -Matplotlib  
 -Scipy  
 
-Some results files where saved in Polar directory
+First you need to go to the Coefs directory
+cd Coefs
+
+and launch LectureClCd.py script
+python LectureClCd.py
+Close the figure which opens.
+This will create some files containing data to be used by other scripts.
+
+cd ../Carroussel
+python Carrousel.py
+Wait a few minutes until the computations end.
+
+Some results files were saved in Polar directory
 
 You can get a 3D simulation of the Carousel by going into Carroussel directory and typing:  
 python animation_3.py
