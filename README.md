@@ -16,17 +16,17 @@ python LectureClCd.py
 Close the figure which opens.
 This will create some files containing data to be used by other scripts.
 
-cd ../Carroussel
-python Carrousel.py
+cd ../Carousel
+python Carousel.py
 Wait a few minutes until the computations end.
 
 Some results files were saved in Polar directory
 
-You can get a 3D simulation of the Carousel by going into Carroussel directory and typing:  
+You can get a 3D simulation of the Carousel by going into Carousel directory and typing:  
 python animation_3.py
 
 The wing parameters are stored in Coefs/wing_cfg.py and in the .dat files (Lift and drag coefficients)
 
 The fluid parameters are stored in Optim/cfg.py. Density can be changed to get results in water instead of air
 
-The carousel parameters (radius, line length) are stored in Carroussel/animation_3.Py
+The carousel parameters (radius, line length) are stored in Caroussel/animation_3.Py
