@@ -37,3 +37,11 @@ The wing parameters are stored in Coefs/wing_cfg.py and in the .dat files (Lift 
 The fluid parameters are stored in Optim/cfg.py. Density can be changed to get results in water instead of air
 
 The carousel parameters (radius, line length) are stored in Caroussel/animation_3.Py
+ 
+2D simulation tool [work in progress]
+==================
+Go to 2D directory and launch the python project
+```
+cd 2D
+python kite.py
+```
