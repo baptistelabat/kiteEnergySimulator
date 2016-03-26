@@ -1,30 +1,30 @@
 
 function [elevations, times, normlift, normdrag, normlinetension] = kite(length, V, m, S, rho, elevation0, AoKdeg, n, duree,omega0)
-% Cette fonction détermine l'angle entre la ligne du kite et le sol en fonction du temps -> trajectoire du kite
-% Cette fonction a pour paramètres d'entrée :
+% Cette fonction dï¿½termine l'angle entre la ligne du kite et le sol en fonction du temps -> trajectoire du kite
+% Cette fonction a pour paramï¿½tres d'entrï¿½e :
 % length : longueur de ligne du cerf-volant (m) constante
 % V vitesse horizontale du vent (m/s)
 % m : masse du cerf-volant (kg)
-% S : surface du kite (m²)
+% S : surface du kite (mï¿½)
 % rho : masse volumique de l'air (kg/m^3)
-% elevation : angle entre la ligne et le sol (décrivant donc l'élévation du
-% cerf-volant) (°). Positif si cerf-volant au dessus du sol
-% AoKdeg : angle de calage (°) constant (pourrait évoluer si on le pilote).
+% elevation : angle entre la ligne et le sol (dï¿½crivant donc l'ï¿½lï¿½vation du
+% cerf-volant) (ï¿½). Positif si cerf-volant au dessus du sol
+% AoKdeg : angle de calage (ï¿½) constant (pourrait ï¿½voluer si on le pilote).
 % angle entre la corde du cerf-volant et la ligne. Positif pour un kite qui
 % vole
-% n : nombre d'itérations
-% durée : temps physique de l'expérience (s)
+% n : nombre d'itï¿½rations
+% durï¿½e : temps physique de l'expï¿½rience (s)
 % omega0 : vitesse initiale du kite (rad/s). Positive si le cerf-volant
 % monte
 
-if nargin == 0      % si on spécifie aucun argument d'entrée à kite, on prend les valeurs dans démo cf ci-après)
+if nargin == 0      % si on spï¿½cifie aucun argument d'entrï¿½e ï¿½ kite, on prend les valeurs dans dï¿½mo cf ci-aprï¿½s)
     [elevations, times, normlift, normdrag, normlinetension] =demo();
     
     return
 end
 
 
-%¨Initial condition
+%ï¿½Initial condition
 time = 0;
 omega = omega0;
 elevation = elevation0;
@@ -32,7 +32,7 @@ g = 9.81;
 AoK = AoKdeg * pi/180;      % passage en radians
 dt = duree/n;
 
-%Définition des variables globales pour les tracés
+%Dï¿½finition des variables globales pour les tracï¿½s
 OMEGA = zeros(1,n);
 OMEGAp = zeros(1,n);
 AngleA = zeros(1,n);
@@ -48,20 +48,20 @@ normlinetension=zeros(1,n);
 
 for i=1:n;
     
-    % Vitesse du kite par rapport au sol projeté dans le repère du sol
-    u_kite = [-omega*length*cos(0.5*pi-elevation+AoK), omega*length*sin(0.5*pi-elevation+AoK)];
+    % Vitesse du kite par rapport au sol projetï¿½ dans le repï¿½re du sol
+    u_kite = [-omega*length*cos(pi/2-elevation+AoK), omega*length*sin(pi/2-elevation+AoK)];
     
-    % Vitesse du vent par rapport au sol projeté dans le repère du sol
+    % Vitesse du vent par rapport au sol projetï¿½ dans le repï¿½re du sol
     Vwind = [V, 0];
-    %vitesse relative du vent (vitesse de l'air par rapport au kite projeté
-    %dans le repère du sol)
+    %vitesse relative du vent (vitesse de l'air par rapport au kite projetï¿½
+    %dans le repï¿½re du sol)
     Vair_kite = Vwind-u_kite;
     i_y = 1;% horiztontale
     i_z = 2;% verticale
     
-    
-    AoA = atan2(Vair_kite(i_z), Vair_kite(i_y))+AoK-elevation; %Angle of Attack (positif pour portance positive).
-    AngleA(i) = AoA;    %implémentation pour tracé
+    angle_air_kite = atan2(Vair_kite(i_z), Vair_kite(i_y));
+    AoA = angle_air_kite+AoK-elevation; %Angle of Attack (positif pour portance positive).
+    AngleA(i) = AoA;    %implï¿½mentation pour tracï¿½
     % Angle entre la corde du kite et la vitesse relative de l'air par rapport
     % au kite.
     
@@ -69,16 +69,18 @@ for i=1:n;
     
     L = 1/2*rho*S*normU^2*coefflift(AoA); %portance
     
-    D = 1/2*rho*S*normU^2*coeffdrag(AoA); %trainée
+    D = 1/2*rho*S*normU^2*coeffdrag(AoA); %trainï¿½e
     
-    Ly = L*cos(elevation-AoK); %Projections dans le repère du sol
-    Lz = L*sin(elevation-AoK);
+    
+    
+    Ly = -L*sin(angle_air_kite); %Projections dans le repï¿½re du sol
+    Lz = L*cos(angle_air_kite);
     lifty(i)=Ly;
     liftz(i)=Lz;
     normlift(i) = sqrt(Ly^2+Lz^2);
     
-    Dy = D*cos(AoA);
-    Dz = -D*sin(AoA);
+    Dy = D*cos(angle_air_kite);
+    Dz = D*sin(angle_air_kite);
     dragy(i)=Dy;
     dragz(i)=Dz;
     normdrag(i) = sqrt(Ly^2+Lz^2);
@@ -102,15 +104,15 @@ for i=1:n;
     time = time+dt;
     times(i)=time;
     
-    %Calcul de la tension -> Problème : absence de tension dès avant
-    %l'équilibre dynamique du kite
+    %Calcul de la tension -> Problï¿½me : absence de tension dï¿½s avant
+    %l'ï¿½quilibre dynamique du kite
     linetension=[(Ly + Dy + m*omegap*length*cos(AoA))/cos(elevation);(Lz - Dz - m*g + m*omegap*length*sin(AoA))/sin(elevation)];
     linetensionsy(i)=linetension(1);
     linetensionsz(i)=linetension(2);
     normlinetension(i)=sqrt(linetensionsy(i)^2+linetensionsz(i)^2);
 end
 
-figure; % Tracé de différentes grandeurs en fonction du temps
+figure; % Tracï¿½ de diffï¿½rentes grandeurs en fonction du temps
 
 subplot(6,1,1);
 plot(times, OMEGA)
@@ -147,10 +149,10 @@ plot(times, normlift)
 title('Portance en fonction du temps')
 subplot(4,1,3);
 plot(times, normdrag)
-title('Trainée en fonction du temps')
+title('Trainï¿½e en fonction du temps')
 subplot(4,1,4);
-plot(times, elevations)
-title('Elevation en fonction du temps')
+plot(times, elevations*180/pi)
+title('Elevation en fonction du temps (ï¿½)')
 end
 
 function [elevations, times, normlift, normdrag, normlinetension] =demo()
@@ -168,7 +170,7 @@ duree = 10;
 end
 
 function [Cl] = coefflift(alpha)
-Cl = sin (2*alpha);
+Cl = pi*sin (2*alpha);
 end
 
 function [Cd] = coeffdrag(alpha)
