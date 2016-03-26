@@ -45,3 +45,5 @@ Go to 2D directory and launch the python project
 cd 2D
 python kite.py
 ```
+A matlab version was developed by Charline MOINEAU, Thierry DAUMAS and François VALENTIN, students at Ecole Centrale de Nantes in 2015/2016.
+You can run it using octave (or matlab of course)
