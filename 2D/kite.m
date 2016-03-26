@@ -49,7 +49,7 @@ normlinetension=zeros(1,n);
 for i=1:n;
     
     % Vitesse du kite par rapport au sol projet� dans le rep�re du sol
-    u_kite = [-omega*length*cos(pi/2-elevation+AoK), omega*length*sin(pi/2-elevation+AoK)];
+    u_kite = [-omega*length*sin(elevation), omega*length*cos(elevation)];
     
     % Vitesse du vent par rapport au sol projet� dans le rep�re du sol
     Vwind = [V, 0];
